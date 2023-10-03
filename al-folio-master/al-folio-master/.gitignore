@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+## this is git ignore file
+./hyde-master/
+./al-folio-master/
+=======
 _site
 .bundle
 .sass-cache
@@ -9,3 +14,4 @@ _site
 Gemfile.lock
 vendor
 
+>>>>>>> 6bb3480 (alfolio)

@@ -1,3 +1,21 @@
+<<<<<<< HEAD
+# ZEMSpace
+
+This is my repository to for creating ZEMspace- my personal website
+
+# Branches 
+
+## Styling :
+    - learnt how to add new branch 
+    - used only for learing perpsoe
+
+## jekyll-hyde-site :
+    - https://github.com/poole/hyde#readme
+    -  did not work
+
+## al-folio
+ -
+=======
 # al-folio
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [maintainers]: https://img.shields.io/badge/maintainers-4-success.svg 'Number of maintainers'
@@ -707,3 +725,4 @@ The theme is available as open source under the terms of the [MIT License](https
 
 Originally, **al-folio** was based on the [\*folio theme](https://github.com/bogoli/-folio) (published by [Lia Bogoev](https://liabogoev.com) and under the MIT license).
 Since then, it got a full re-write of the styles and many additional cool features.
+>>>>>>> 6bb3480 (alfolio)
