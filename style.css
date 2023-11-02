@@ -1,5 +1,21 @@
+<<<<<<< HEAD
 body{
     margin: 0;
     background: pink;
     text-align: center;
 }
+=======
+body {
+    transition: background-color 0.5s ease;
+    text-align: center;
+}
+.center-text {
+    margin: 0;
+}
+.dynamic-background {
+    background-color: #3498db; /* Default background color */
+    color: #fff; /* Default text color */
+}
+
+/* Add more styles as needed */
+>>>>>>> a2e5548d21ec491ce17720ba5caa20f66aa8b1a7
