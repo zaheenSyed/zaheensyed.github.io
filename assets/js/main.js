@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const navToggle = navMenu ? navMenu.querySelector('.nav-toggle') : null;
   const navList = navMenu ? navMenu.querySelector('ul') : null;
   const navLinks = navMenu ? Array.from(navMenu.querySelectorAll('a[href^="#"]')) : [];
-  const navSentinel = document.querySelector('.nav-sentinel');
   const mobileQuery = window.matchMedia('(max-width: 992px)');
   const sections = navLinks
     .map((link) => document.querySelector(link.getAttribute('href')))
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
       navMenu.classList.remove('is-open');
       navMenu.removeAttribute('aria-expanded');
       navList?.removeAttribute('aria-hidden');
-      navMenu.classList.toggle('is-fixed', shouldPinNav());
       if (navToggle) {
         navToggle.setAttribute('aria-expanded', 'false');
         navToggle.setAttribute('aria-hidden', 'true');
@@ -43,23 +41,18 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('bx-menu', !isOpen);
         icon.classList.toggle('bx-x', isOpen);
       }
+    } else {
+      navMenu.setAttribute('aria-expanded', String(isOpen));
+      navList?.setAttribute('aria-hidden', String(!isOpen));
+      navToggle?.setAttribute('aria-expanded', String(isOpen));
+      navToggle?.removeAttribute('aria-hidden');
+      const icon = navToggle?.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('bx-menu', !isOpen);
+        icon.classList.toggle('bx-x', isOpen);
+      }
       navMenu.classList.remove('is-fixed');
     }
-  };
-
-  const shouldPinNav = () => {
-    if (!navSentinel || mobileQuery.matches) return false;
-    const sentinelTop = navSentinel.getBoundingClientRect().top;
-    return sentinelTop <= 24;
-  };
-
-  const handleFixedNav = () => {
-    if (!navMenu) return;
-    if (mobileQuery.matches) {
-      navMenu.classList.remove('is-fixed');
-      return;
-    }
-    navMenu.classList.toggle('is-fixed', shouldPinNav());
   };
 
   syncNavState();
@@ -124,9 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateActiveNav();
   window.addEventListener('scroll', updateActiveNav);
-  handleFixedNav();
-  window.addEventListener('scroll', handleFixedNav);
-  window.addEventListener('resize', handleFixedNav);
 
   // Add a subtle header shadow once the user scrolls past the hero
   if (header) {
@@ -140,11 +130,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     handleHeaderShadow();
     window.addEventListener('scroll', handleHeaderShadow);
-  }
-
-  if (mobileQuery.addEventListener) {
-    mobileQuery.addEventListener('change', handleFixedNav);
-  } else if (mobileQuery.addListener) {
-    mobileQuery.addListener(handleFixedNav);
   }
 });

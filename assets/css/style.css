@@ -117,18 +117,12 @@ ul {
   display: flex;
   align-items: center;
   padding: 4rem 0 6rem;
-  transition: padding 0.3s ease;
-}
-
-#header.header-condensed {
-  padding-top: 3rem;
 }
 
 .hero {
   display: flex;
   flex-direction: column;
   gap: 3rem;
-  position: relative;
 }
 
 .hero-content {
@@ -184,16 +178,6 @@ ul {
 .nav-menu {
   margin-left: auto;
   align-self: center;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  position: relative;
-}
-
-.nav-sentinel {
-  width: 100%;
-  height: 1px;
-  pointer-events: none;
 }
 
 .nav-menu ul {
@@ -206,30 +190,6 @@ ul {
   border-radius: 999px;
   border: 1px solid var(--border);
   backdrop-filter: blur(18px);
-  box-shadow: var(--shadow);
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  z-index: 5;
-}
-
-.nav-toggle {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: rgba(15, 23, 42, 0.8);
-  color: var(--accent);
-  font-size: 1.5rem;
-  cursor: pointer;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.nav-toggle:hover,
-.nav-toggle:focus {
-  border-color: var(--accent);
-  transform: translateY(-1px);
 }
 
 .nav-menu a {
@@ -257,27 +217,6 @@ ul {
   background: var(--accent);
 }
 
-#header.header-condensed .nav-menu ul {
-  background: var(--surface-strong);
-}
-
-@media (min-width: 993px) {
-  .nav-menu.is-fixed {
-    position: fixed;
-    top: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    margin-left: 0;
-    z-index: 1000;
-  }
-
-  .nav-menu.is-fixed ul {
-    background: var(--surface-strong);
-    box-shadow: 0 24px 60px rgba(2, 6, 23, 0.55);
-    border-color: rgba(148, 163, 184, 0.3);
-  }
-}
-
 /* Sections */
 main {
   position: relative;
@@ -285,7 +224,6 @@ main {
 
 .resume-section {
   padding: 5rem 0;
-  scroll-margin-top: 180px;
 }
 
 .section-title {
@@ -621,31 +559,11 @@ main {
   .nav-menu {
     margin: 0;
     order: -1;
-    width: 100%;
-    justify-content: space-between;
   }
 
-  .nav-toggle {
-    display: inline-flex;
-  }
-
-  body.js-enabled .nav-menu ul {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 0.75rem);
-    flex-direction: column;
-    gap: 0.65rem;
-    width: min(260px, 100%);
-    padding: 1rem;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-10px);
-  }
-
-  body.js-enabled .nav-menu.is-open ul {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
+  .nav-menu ul {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 
@@ -661,7 +579,6 @@ main {
 
   .resume-section {
     padding: 4rem 0;
-    scroll-margin-top: 140px;
   }
 
   .timeline {

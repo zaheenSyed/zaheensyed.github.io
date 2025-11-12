@@ -2,14 +2,7 @@
   const SCHOLAR_USER = 'IELgvgEAAAAJ';
   const FEED_SELECTOR = '#scholar-feed';
   const FEED_LIMIT = 5;
-  const SCHOLAR_URL = `https://scholar.google.com/citations?user=${SCHOLAR_USER}&hl=en&view_op=list_works&sortby=pubdate`;
-  const PROXY_ENDPOINTS = [
-    `https://r.jina.ai/https://scholar.google.com/citations?user=${SCHOLAR_USER}&hl=en&view_op=list_works&sortby=pubdate`,
-    `https://r.jina.ai/http://scholar.google.com/citations?user=${SCHOLAR_USER}&hl=en&view_op=list_works&sortby=pubdate`,
-    `https://cors.isomorphic-git.org/${SCHOLAR_URL}`,
-    `https://thingproxy.freeboard.io/fetch/${SCHOLAR_URL}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(SCHOLAR_URL)}`
-  ];
+  const PROXY_ENDPOINT = `https://r.jina.ai/https://scholar.google.com/citations?user=${SCHOLAR_USER}&hl=en&view_op=list_works&sortby=pubdate`;
 
   const normaliseText = (text) => (text || '').replace(/\s+/g, ' ').trim();
 
@@ -67,25 +60,12 @@
     if (!feed) return;
 
     try {
-      const fetchScholarHtml = async () => {
-        for (const endpoint of PROXY_ENDPOINTS) {
-          try {
-            const response = await fetch(endpoint, { credentials: 'omit' });
-            if (!response || !response.ok) {
-              continue;
-            }
-            const text = await response.text();
-            if (text && text.trim().length) {
-              return text;
-            }
-          } catch (proxyError) {
-            console.warn('Scholar proxy attempt failed', endpoint, proxyError);
-          }
-        }
-        throw new Error('All proxy endpoints failed');
-      };
+      const response = await fetch(PROXY_ENDPOINT);
+      if (!response.ok) {
+        throw new Error(`Scholar request failed with status ${response.status}`);
+      }
 
-      const html = await fetchScholarHtml();
+      const html = await response.text();
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       const rows = Array.from(doc.querySelectorAll('#gsc_a_b .gsc_a_tr'));
