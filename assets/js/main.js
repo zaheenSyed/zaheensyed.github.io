@@ -108,6 +108,27 @@ document.addEventListener('DOMContentLoaded', () => {
   updateActiveNav();
   window.addEventListener('scroll', updateActiveNav);
 
+  // Sticky navigation on scroll
+  let lastScrollY = window.scrollY;
+  const stickyThreshold = 100; // Start sticky behavior after scrolling 100px
+  
+  const handleStickyNav = () => {
+    const currentScrollY = window.scrollY;
+    
+    if (navMenu) {
+      if (currentScrollY > stickyThreshold) {
+        navMenu.classList.add('sticky');
+      } else {
+        navMenu.classList.remove('sticky');
+      }
+    }
+    
+    lastScrollY = currentScrollY;
+  };
+
+  handleStickyNav();
+  window.addEventListener('scroll', handleStickyNav, { passive: true });
+
   // Use IntersectionObserver for reliable navigation pinning across breakpoints
   if (header && navMenu) {
     const observerOptions = {

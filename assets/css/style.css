@@ -178,6 +178,27 @@ ul {
 .nav-menu {
   margin-left: auto;
   align-self: center;
+  transition: all 0.3s ease;
+}
+
+/* Sticky navigation wrapper */
+.nav-menu.sticky {
+  position: fixed;
+  top: 1rem;
+  right: 2rem;
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .nav-menu ul {
@@ -190,6 +211,13 @@ ul {
   border-radius: 999px;
   border: 1px solid var(--border);
   backdrop-filter: blur(18px);
+}
+
+/* Enhanced backdrop blur and shadow when sticky */
+.nav-menu.sticky ul {
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
 .nav-menu a {
@@ -564,6 +592,17 @@ main {
   .nav-menu ul {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  /* Adjust sticky navigation for tablets/mobile */
+  .nav-menu.sticky {
+    position: fixed;
+    top: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    right: auto;
+    width: calc(100% - 2rem);
+    max-width: 600px;
   }
 }
 
