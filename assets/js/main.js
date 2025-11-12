@@ -41,6 +41,17 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('bx-menu', !isOpen);
         icon.classList.toggle('bx-x', isOpen);
       }
+    } else {
+      navMenu.setAttribute('aria-expanded', String(isOpen));
+      navList?.setAttribute('aria-hidden', String(!isOpen));
+      navToggle?.setAttribute('aria-expanded', String(isOpen));
+      navToggle?.removeAttribute('aria-hidden');
+      const icon = navToggle?.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('bx-menu', !isOpen);
+        icon.classList.toggle('bx-x', isOpen);
+      }
+      navMenu.classList.remove('is-fixed');
     }
   };
 
