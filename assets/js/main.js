@@ -1,151 +1,207 @@
 /**
-* Template Name: Personal - v2.1.0
-* Template URL: https://bootstrapmade.com/personal-free-resume-bootstrap-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-!(function($) {
-  "use strict";
+ * Custom interactions for the refreshed portfolio layout.
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.classList.add('js-enabled');
+  const header = document.querySelector('#header');
+  const navMenu = document.querySelector('.nav-menu');
+  const navToggle = navMenu ? navMenu.querySelector('.nav-toggle') : null;
+  const navList = navMenu ? navMenu.querySelector('ul') : null;
+  const navLinks = navMenu ? Array.from(navMenu.querySelectorAll('a[href^="#"]')) : [];
+  const navSentinel = document.querySelector('.nav-sentinel');
+  const mobileQuery = window.matchMedia('(max-width: 992px)');
+  const sections = navLinks
+    .map((link) => document.querySelector(link.getAttribute('href')))
+    .filter((section) => section instanceof HTMLElement);
+  const smoothScrollLinks = Array.from(
+    document.querySelectorAll('a[href^="#"]:not([href="#"])')
+  );
 
-  // Nav Menu
-  $(document).on('click', '.nav-menu a, .mobile-nav a', function(e) {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var hash = this.hash;
-      var target = $(hash);
-      if (target.length) {
-        e.preventDefault();
+  const setNavFixedState = (isFixed) => {
+    if (!navMenu) return;
+    if (mobileQuery.matches) {
+      navMenu.classList.remove('is-fixed');
+      return;
+    }
+    navMenu.classList.toggle('is-fixed', Boolean(isFixed));
+  };
 
-        if ($(this).parents('.nav-menu, .mobile-nav').length) {
-          $('.nav-menu .active, .mobile-nav .active').removeClass('active');
-          $(this).closest('li').addClass('active');
+  const syncNavState = () => {
+    if (!navMenu) return;
+    const isMobile = mobileQuery.matches;
+    const isOpen = navMenu.classList.contains('is-open');
+
+    if (!isMobile) {
+      navMenu.classList.remove('is-open');
+      navMenu.removeAttribute('aria-expanded');
+      navList?.removeAttribute('aria-hidden');
+      setNavFixedState(navMenu.classList.contains('is-fixed'));
+      if (navToggle) {
+        navToggle.setAttribute('aria-expanded', 'false');
+        navToggle.setAttribute('aria-hidden', 'true');
+        const icon = navToggle.querySelector('i');
+        if (icon) {
+          icon.classList.add('bx-menu');
+          icon.classList.remove('bx-x');
         }
-
-        if (hash == '#header') {
-          $('#header').removeClass('header-top');
-          $("section").removeClass('section-show');
-          return;
-        }
-
-        if (!$('#header').hasClass('header-top')) {
-          $('#header').addClass('header-top');
-          setTimeout(function() {
-            $("section").removeClass('section-show');
-            $(hash).addClass('section-show');
-          }, 350);
-        } else {
-          $("section").removeClass('section-show');
-          $(hash).addClass('section-show');
-        }
-
-        if ($('body').hasClass('mobile-nav-active')) {
-          $('body').removeClass('mobile-nav-active');
-          $('.mobile-nav-toggle i').toggleClass('icofont-navigation-menu icofont-close');
-          $('.mobile-nav-overly').fadeOut();
-        }
-
-        return false;
-
       }
+    } else {
+      navMenu.setAttribute('aria-expanded', String(isOpen));
+      navList?.setAttribute('aria-hidden', String(!isOpen));
+      navToggle?.setAttribute('aria-expanded', String(isOpen));
+      navToggle?.removeAttribute('aria-hidden');
+      const icon = navToggle?.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('bx-menu', !isOpen);
+        icon.classList.toggle('bx-x', isOpen);
+      }
+      navMenu.classList.remove('is-fixed');
     }
-  });
+  };
 
-  // Activate/show sections on load with hash links
-  if (window.location.hash) {
-    var initial_nav = window.location.hash;
-    if ($(initial_nav).length) {
-      $('#header').addClass('header-top');
-      $('.nav-menu .active, .mobile-nav .active').removeClass('active');
-      $('.nav-menu, .mobile-nav').find('a[href="' + initial_nav + '"]').parent('li').addClass('active');
-      setTimeout(function() {
-        $("section").removeClass('section-show');
-        $(initial_nav).addClass('section-show');
-      }, 350);
+  const handleFixedNavFallback = () => {
+    if (!navSentinel) return;
+    const sentinelTop = navSentinel.getBoundingClientRect().top;
+    const shouldFix = sentinelTop <= 48;
+    setNavFixedState(shouldFix);
+  };
+
+  const connectNavObserver = () => {
+    if (!('IntersectionObserver' in window) || !navSentinel) {
+      handleFixedNavFallback();
+      return null;
     }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const shouldFix = !entry.isIntersecting && entry.boundingClientRect.top <= 0;
+          setNavFixedState(shouldFix);
+        });
+      },
+      {
+        root: null,
+        rootMargin: '-32px 0px 0px 0px',
+        threshold: 0
+      }
+    );
+
+    observer.observe(navSentinel);
+    return observer;
+  };
+
+  let navObserver = connectNavObserver();
+
+  const refreshNavObserver = () => {
+    if (navObserver) {
+      navObserver.disconnect();
+    }
+    navObserver = connectNavObserver();
+  };
+
+  syncNavState();
+
+  if (typeof mobileQuery.addEventListener === 'function') {
+    mobileQuery.addEventListener('change', () => {
+      syncNavState();
+      refreshNavObserver();
+    });
+  } else if (typeof mobileQuery.addListener === 'function') {
+    mobileQuery.addListener(() => {
+      syncNavState();
+      refreshNavObserver();
+    });
   }
 
-  // Mobile Navigation
-  if ($('.nav-menu').length) {
-    var $mobile_nav = $('.nav-menu').clone().prop({
-      class: 'mobile-nav d-lg-none'
-    });
-    $('body').append($mobile_nav);
-    $('body').prepend('<button type="button" class="mobile-nav-toggle d-lg-none"><i class="icofont-navigation-menu"></i></button>');
-    $('body').append('<div class="mobile-nav-overly"></div>');
+  if (!navObserver && navSentinel) {
+    window.addEventListener('scroll', handleFixedNavFallback);
+    window.addEventListener('resize', handleFixedNavFallback);
+    handleFixedNavFallback();
+  }
 
-    $(document).on('click', '.mobile-nav-toggle', function(e) {
-      $('body').toggleClass('mobile-nav-active');
-      $('.mobile-nav-toggle i').toggleClass('icofont-navigation-menu icofont-close');
-      $('.mobile-nav-overly').toggle();
-    });
+  // Smooth scrolling for in-page navigation and hero CTAs
+  const prefersReducedMotion =
+    typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : { matches: false };
 
-    $(document).click(function(e) {
-      var container = $(".mobile-nav, .mobile-nav-toggle");
-      if (!container.is(e.target) && container.has(e.target).length === 0) {
-        if ($('body').hasClass('mobile-nav-active')) {
-          $('body').removeClass('mobile-nav-active');
-          $('.mobile-nav-toggle i').toggleClass('icofont-navigation-menu icofont-close');
-          $('.mobile-nav-overly').fadeOut();
+  const scrollToTarget = (target) => {
+    const behaviour = prefersReducedMotion.matches ? 'auto' : 'smooth';
+    target.scrollIntoView({ behavior: behaviour, block: 'start' });
+  };
+
+  smoothScrollLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const targetId = link.getAttribute('href');
+      const target = targetId ? document.querySelector(targetId) : null;
+      if (target) {
+        event.preventDefault();
+        scrollToTarget(target);
+        if (navMenu && navMenu.classList.contains('is-open')) {
+          navMenu.classList.remove('is-open');
+          syncNavState();
         }
       }
     });
-  } else if ($(".mobile-nav, .mobile-nav-toggle").length) {
-    $(".mobile-nav, .mobile-nav-toggle").hide();
+  });
+
+  // Toggle navigation visibility on mobile
+  if (navToggle && navMenu) {
+    navToggle.addEventListener('click', () => {
+      const isOpen = navMenu.classList.toggle('is-open');
+      if (isOpen) {
+        navMenu.setAttribute('aria-expanded', 'true');
+      }
+      const icon = navToggle.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('bx-menu', !isOpen);
+        icon.classList.toggle('bx-x', isOpen);
+      }
+      syncNavState();
+    });
   }
 
-  // jQuery counterUp
-  $('[data-toggle="counter-up"]').counterUp({
-    delay: 10,
-    time: 1000
-  });
+  // Highlight the section that is currently visible in the viewport
+  const updateActiveNav = () => {
+    const fromTop = window.scrollY + 120; // offset to account for hero padding
 
-  // Skills section
-  $('.skills-content').waypoint(function() {
-    $('.progress .progress-bar').each(function() {
-      $(this).css("width", $(this).attr("aria-valuenow") + '%');
-    });
-  }, {
-    offset: '80%'
-  });
-
-  // Testimonials carousel (uses the Owl Carousel library)
-  $(".testimonials-carousel").owlCarousel({
-    autoplay: true,
-    dots: true,
-    loop: true,
-    responsive: {
-      0: {
-        items: 1
-      },
-      768: {
-        items: 2
-      },
-      900: {
-        items: 3
+    let currentSection = null;
+    sections.forEach((section) => {
+      if (section.offsetTop <= fromTop) {
+        currentSection = section;
       }
-    }
-  });
-
-  // Porfolio isotope and filter
-  $(window).on('load', function() {
-    var portfolioIsotope = $('.portfolio-container').isotope({
-      itemSelector: '.portfolio-item',
-      layoutMode: 'fitRows'
     });
 
-    $('#portfolio-flters li').on('click', function() {
-      $("#portfolio-flters li").removeClass('filter-active');
-      $(this).addClass('filter-active');
-
-      portfolioIsotope.isotope({
-        filter: $(this).data('filter')
-      });
+    navLinks.forEach((link) => {
+      const href = link.getAttribute('href');
+      if (currentSection && href === `#${currentSection.id}`) {
+        link.parentElement?.classList.add('active');
+      } else {
+        link.parentElement?.classList.remove('active');
+      }
     });
+  };
 
-  });
+  updateActiveNav();
+  window.addEventListener('scroll', updateActiveNav);
 
-  // Initiate venobox (lightbox feature used in portofilo)
-  $(document).ready(function() {
-    $('.venobox').venobox();
-  });
+  // Add a subtle header shadow once the user scrolls past the hero
+  if (header) {
+    const handleHeaderShadow = () => {
+      if (window.scrollY > 40) {
+        header.classList.add('header-condensed');
+      } else {
+        header.classList.remove('header-condensed');
+      }
+    };
 
-})(jQuery);
+    handleHeaderShadow();
+    window.addEventListener('scroll', handleHeaderShadow);
+  }
+
+  if (mobileQuery.addEventListener) {
+    mobileQuery.addEventListener('change', updateActiveNav);
+  } else if (mobileQuery.addListener) {
+    mobileQuery.addListener(updateActiveNav);
+  }
+});
