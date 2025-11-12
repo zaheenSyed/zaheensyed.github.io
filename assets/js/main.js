@@ -41,17 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('bx-menu', !isOpen);
         icon.classList.toggle('bx-x', isOpen);
       }
-    } else {
-      navMenu.setAttribute('aria-expanded', String(isOpen));
-      navList?.setAttribute('aria-hidden', String(!isOpen));
-      navToggle?.setAttribute('aria-expanded', String(isOpen));
-      navToggle?.removeAttribute('aria-hidden');
-      const icon = navToggle?.querySelector('i');
-      if (icon) {
-        icon.classList.toggle('bx-menu', !isOpen);
-        icon.classList.toggle('bx-x', isOpen);
-      }
-      navMenu.classList.remove('is-fixed');
     }
   };
 
@@ -62,8 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     mobileQuery.addListener(syncNavState);
   }
 
-  // Smooth scrolling for in-page navigation
-  navLinks.forEach((link) => {
+  // Smooth scrolling for all in-page anchors (nav links + hero CTAs)
+  const allInPageLinks = Array.from(document.querySelectorAll('a[href^="#"]'));
+  allInPageLinks.forEach((link) => {
     link.addEventListener('click', (event) => {
       const targetId = link.getAttribute('href');
       const target = targetId ? document.querySelector(targetId) : null;
@@ -118,17 +108,26 @@ document.addEventListener('DOMContentLoaded', () => {
   updateActiveNav();
   window.addEventListener('scroll', updateActiveNav);
 
-  // Add a subtle header shadow once the user scrolls past the hero
-  if (header) {
-    const handleHeaderShadow = () => {
-      if (window.scrollY > 40) {
-        header.classList.add('header-condensed');
-      } else {
-        header.classList.remove('header-condensed');
-      }
+  // Use IntersectionObserver for reliable navigation pinning across breakpoints
+  if (header && navMenu) {
+    const observerOptions = {
+      root: null,
+      threshold: 0,
+      rootMargin: '-40px 0px 0px 0px'
     };
 
-    handleHeaderShadow();
-    window.addEventListener('scroll', handleHeaderShadow);
+    const headerObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) {
+          navMenu.classList.add('is-fixed');
+          header.classList.add('header-condensed');
+        } else {
+          navMenu.classList.remove('is-fixed');
+          header.classList.remove('header-condensed');
+        }
+      });
+    }, observerOptions);
+
+    headerObserver.observe(header);
   }
 });
