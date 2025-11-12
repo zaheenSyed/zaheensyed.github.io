@@ -8,23 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const navToggle = navMenu ? navMenu.querySelector('.nav-toggle') : null;
   const navList = navMenu ? navMenu.querySelector('ul') : null;
   const navLinks = navMenu ? Array.from(navMenu.querySelectorAll('a[href^="#"]')) : [];
-  const navSentinel = document.querySelector('.nav-sentinel');
   const mobileQuery = window.matchMedia('(max-width: 992px)');
   const sections = navLinks
     .map((link) => document.querySelector(link.getAttribute('href')))
     .filter((section) => section instanceof HTMLElement);
-  const smoothScrollLinks = Array.from(
-    document.querySelectorAll('a[href^="#"]:not([href="#"])')
-  );
-
-  const setNavFixedState = (isFixed) => {
-    if (!navMenu) return;
-    if (mobileQuery.matches) {
-      navMenu.classList.remove('is-fixed');
-      return;
-    }
-    navMenu.classList.toggle('is-fixed', Boolean(isFixed));
-  };
 
   const syncNavState = () => {
     if (!navMenu) return;
@@ -35,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
       navMenu.classList.remove('is-open');
       navMenu.removeAttribute('aria-expanded');
       navList?.removeAttribute('aria-hidden');
-      setNavFixedState(navMenu.classList.contains('is-fixed'));
       if (navToggle) {
         navToggle.setAttribute('aria-expanded', 'false');
         navToggle.setAttribute('aria-hidden', 'true');
@@ -55,88 +41,35 @@ document.addEventListener('DOMContentLoaded', () => {
         icon.classList.toggle('bx-menu', !isOpen);
         icon.classList.toggle('bx-x', isOpen);
       }
+    } else {
+      navMenu.setAttribute('aria-expanded', String(isOpen));
+      navList?.setAttribute('aria-hidden', String(!isOpen));
+      navToggle?.setAttribute('aria-expanded', String(isOpen));
+      navToggle?.removeAttribute('aria-hidden');
+      const icon = navToggle?.querySelector('i');
+      if (icon) {
+        icon.classList.toggle('bx-menu', !isOpen);
+        icon.classList.toggle('bx-x', isOpen);
+      }
       navMenu.classList.remove('is-fixed');
     }
   };
 
-  const handleFixedNavFallback = () => {
-    if (!navSentinel) return;
-    const sentinelTop = navSentinel.getBoundingClientRect().top;
-    const shouldFix = sentinelTop <= 48;
-    setNavFixedState(shouldFix);
-  };
-
-  const connectNavObserver = () => {
-    if (!('IntersectionObserver' in window) || !navSentinel) {
-      handleFixedNavFallback();
-      return null;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const shouldFix = !entry.isIntersecting && entry.boundingClientRect.top <= 0;
-          setNavFixedState(shouldFix);
-        });
-      },
-      {
-        root: null,
-        rootMargin: '-32px 0px 0px 0px',
-        threshold: 0
-      }
-    );
-
-    observer.observe(navSentinel);
-    return observer;
-  };
-
-  let navObserver = connectNavObserver();
-
-  const refreshNavObserver = () => {
-    if (navObserver) {
-      navObserver.disconnect();
-    }
-    navObserver = connectNavObserver();
-  };
-
   syncNavState();
-
   if (typeof mobileQuery.addEventListener === 'function') {
-    mobileQuery.addEventListener('change', () => {
-      syncNavState();
-      refreshNavObserver();
-    });
+    mobileQuery.addEventListener('change', syncNavState);
   } else if (typeof mobileQuery.addListener === 'function') {
-    mobileQuery.addListener(() => {
-      syncNavState();
-      refreshNavObserver();
-    });
+    mobileQuery.addListener(syncNavState);
   }
 
-  if (!navObserver && navSentinel) {
-    window.addEventListener('scroll', handleFixedNavFallback);
-    window.addEventListener('resize', handleFixedNavFallback);
-    handleFixedNavFallback();
-  }
-
-  // Smooth scrolling for in-page navigation and hero CTAs
-  const prefersReducedMotion =
-    typeof window.matchMedia === 'function'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)')
-      : { matches: false };
-
-  const scrollToTarget = (target) => {
-    const behaviour = prefersReducedMotion.matches ? 'auto' : 'smooth';
-    target.scrollIntoView({ behavior: behaviour, block: 'start' });
-  };
-
-  smoothScrollLinks.forEach((link) => {
+  // Smooth scrolling for in-page navigation
+  navLinks.forEach((link) => {
     link.addEventListener('click', (event) => {
       const targetId = link.getAttribute('href');
       const target = targetId ? document.querySelector(targetId) : null;
       if (target) {
         event.preventDefault();
-        scrollToTarget(target);
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         if (navMenu && navMenu.classList.contains('is-open')) {
           navMenu.classList.remove('is-open');
           syncNavState();
@@ -197,11 +130,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
     handleHeaderShadow();
     window.addEventListener('scroll', handleHeaderShadow);
-  }
-
-  if (mobileQuery.addEventListener) {
-    mobileQuery.addEventListener('change', updateActiveNav);
-  } else if (mobileQuery.addListener) {
-    mobileQuery.addListener(updateActiveNav);
   }
 });
