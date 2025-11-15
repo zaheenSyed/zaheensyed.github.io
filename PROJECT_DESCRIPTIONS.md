@@ -1,0 +1,43 @@
+# Project Descriptions for Resume
+
+## UAV Vibration Analysis
+**2025 | Research Project | Paper Submitted**
+
+- Developed high-frequency telemetry capture system using ArduPilot, pymavlink, and MAVExplorer to collect 1000 kHz IMU and EKF3 data from UAV platforms
+- Performed advanced signal processing including FFT and PSD analysis to characterize vibration spectra and reconstruct 3D trajectories for FSO beam alignment optimization
+- Identified and resolved hardware vibration sources through systematic analysis, improving system stability and enabling precise optical communication channel modeling
+
+## AADM UAV Challenge
+**2025 | Competition Development | Team Lead**
+
+- Optimized autonomous UAV trajectory planning using reinforcement learning algorithms within AERPAW digital twin simulation environment
+- Integrated robotics control stacks with communication modules, resolving critical mission bugs and ensuring seamless system interoperability
+- Led cross-functional team through iterative flight testing cycles, coordinating contributors and delivering competition-ready autonomous systems
+
+## Mechanical Steering Head with FSO Transceivers
+**2024 | Robotics Platform | Hardware Design**
+
+- Designed and implemented dual-axis actuation system with servo motors and slip rings for continuous 360° optical beam alignment
+- Integrated FSO communication terminals with embedded control systems on ESP32 and Raspberry Pi platforms
+- Developed real-time mechatronics control loops achieving precise beam steering for long-range optical communication links
+
+## Real-Time Crash & Pedestrian Detection
+**2022 | Edge AI Deployment | Computer Vision**
+
+- Implemented YOLOv5 and CNN-based perception models for real-time roadway incident detection and pedestrian awareness systems
+- Built IoT-based vehicular communication pipelines enabling low-latency inference distribution across connected vehicle networks
+- Optimized edge deployment architecture with network protocol tuning, achieving real-time analytics performance for safety-critical applications
+
+## FPGA-Based Arcade Game
+**2023 | Hardware Prototype | Digital Design**
+
+- Programmed custom gameplay logic in Verilog/HDL with cycle-accurate timing constraints for responsive interactive controls
+- Simulated and verified digital subsystems and embedded interfaces using industry-standard FPGA development tools
+- Prototyped complete system-on-chip experience demonstrating hardware-accelerated game mechanics on FPGA development boards
+
+## Mars Rover Project
+**2017-2019 | Competition Team Lead | Robotics**
+
+- Led 64-member multidisciplinary team in developing autonomous navigation system with advanced path planning and sensor fusion algorithms
+- Engineered communications and robotics subsystems using MATLAB, ROS, and custom hardware integration
+- Coordinated competition campaigns and media engagements, showcasing rover capabilities at international robotics competitions
